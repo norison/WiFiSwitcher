@@ -24,6 +24,7 @@ try
     var logging = builder.Logging;
 
     services.Configure<ConnectionSettings>(configuration.GetSection("ConnectionSettings"));
+    services.Configure<TimerSettings>(configuration.GetSection("TimerSettings"));
     services.AddSingleton<IHttpClientFactory, HttpClientFactory>();
     services.AddSingleton<INetworkInterfaceService, NetworkInterfaceService>();
     services.AddSingleton<INetshService, NetshService>();

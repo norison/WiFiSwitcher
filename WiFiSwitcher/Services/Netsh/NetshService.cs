@@ -24,7 +24,7 @@ public class NetshService : INetshService
 
         if (string.IsNullOrEmpty(statusLine))
         {
-            throw new Exception("Interface status line was not found");
+            throw new Exception("Interface status was not found");
         }
 
         return statusLine.Contains("Enabled", StringComparison.InvariantCultureIgnoreCase) ? InterfaceStatus.Enabled : InterfaceStatus.Disabled;

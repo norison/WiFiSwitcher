@@ -37,7 +37,10 @@ public class Worker : BackgroundService
             try
             {
                 var ipAddress = _networkInterfaceService.GetIpAddress();
-                var httpClient = _httpClientFactory.Create(ipAddress);
+
+                _logger.LogInformation("Resolved IP address: {address}", ipAddress);
+
+                using var httpClient = _httpClientFactory.Create(ipAddress);
 
                 var response = await httpClient.GetAsync(_connectionSettings.TargetAddress, stoppingToken);
 
@@ -54,7 +57,7 @@ public class Worker : BackgroundService
             }
             catch (Exception exception)
             {
-                _logger.LogError(exception, "The request operation failed");
+                _logger.LogError(exception.Message);
                 await _networkInterfaceService.DisableWiFiAdapter();
             }
 

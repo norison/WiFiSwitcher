@@ -19,6 +19,7 @@ public class ProcessService : IProcessService
         };
 
         process.Start();
+
         await process.WaitForExitAsync();
 
         var output = new List<string>();

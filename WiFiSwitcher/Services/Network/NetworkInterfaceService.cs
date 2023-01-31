@@ -12,7 +12,7 @@ public class NetworkInterfaceService : INetworkInterfaceService
     private readonly INetshService _netshService;
     private readonly ConnectionSettings _connectionSettings;
 
-    private const string WiFiAdapterName = "Ethernet 2";
+    private const string WiFiAdapterName = "Wi-Fi";
     private const string EnableOperation = "enable";
     private const string DisableOperation = "disable";
 
@@ -44,27 +44,41 @@ public class NetworkInterfaceService : INetworkInterfaceService
 
     public async Task EnableWiFiAdapter()
     {
-        var status = await _netshService.GetInterfaceStatusAsync(WiFiAdapterName);
-
-        if (status == InterfaceStatus.Enabled)
+        try
         {
-            _logger.LogInformation("The interface status is enabled. The operation will be skipped");
-            return;
-        }
+            var status = await _netshService.GetInterfaceStatusAsync(WiFiAdapterName);
 
-        await _netshService.SetInterfaceAsync(WiFiAdapterName, EnableOperation);
+            if (status == InterfaceStatus.Enabled)
+            {
+                _logger.LogInformation("The interface status is enabled. The operation will be skipped");
+                return;
+            }
+
+            await _netshService.SetInterfaceAsync(WiFiAdapterName, EnableOperation);
+        }
+        catch (Exception exception)
+        {
+            _logger.LogError(exception.Message);
+        }
     }
 
     public async Task DisableWiFiAdapter()
     {
-        var status = await _netshService.GetInterfaceStatusAsync(WiFiAdapterName);
-
-        if (status == InterfaceStatus.Disabled)
+        try
         {
-            _logger.LogInformation("The interface status is disabled. The operation will be skipped");
-            return;
-        }
+            var status = await _netshService.GetInterfaceStatusAsync(WiFiAdapterName);
 
-        await _netshService.SetInterfaceAsync(WiFiAdapterName, DisableOperation);
+            if (status == InterfaceStatus.Disabled)
+            {
+                _logger.LogInformation("The interface status is disabled. The operation will be skipped");
+                return;
+            }
+
+            await _netshService.SetInterfaceAsync(WiFiAdapterName, DisableOperation);
+        }
+        catch (Exception exception)
+        {
+            _logger.LogError(exception.Message);
+        }
     }
 }
