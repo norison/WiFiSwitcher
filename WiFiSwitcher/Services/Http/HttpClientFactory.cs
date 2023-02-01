@@ -3,7 +3,7 @@ using System.Net.Sockets;
 
 namespace WiFiSwitcher.Services.Http;
 
-public class HttpClientFactory: IHttpClientFactory
+public class HttpClientFactory : IHttpClientFactory
 {
     public IHttpClient Create(IPAddress address)
     {

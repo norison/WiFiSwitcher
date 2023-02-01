@@ -1,6 +1,6 @@
-﻿using System.Net;
+﻿using Microsoft.Extensions.Options;
+using System.Net;
 using System.Net.NetworkInformation;
-using Microsoft.Extensions.Options;
 using WiFiSwitcher.Services.Netsh;
 using WiFiSwitcher.Settings;
 

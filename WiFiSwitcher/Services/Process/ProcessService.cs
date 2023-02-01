@@ -20,13 +20,16 @@ public class ProcessService : IProcessService
 
         process.Start();
 
-        await process.WaitForExitAsync();
-
         var output = new List<string>();
 
-        while (await process.StandardOutput.ReadLineAsync() is { } line)
+        while (!process.StandardOutput.EndOfStream)
         {
-            output.Add(line);
+            var line = await process.StandardOutput.ReadLineAsync();
+
+            if (!string.IsNullOrEmpty(line))
+            {
+                output.Add(line);
+            }
         }
 
         return output;

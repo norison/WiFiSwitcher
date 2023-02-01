@@ -4,12 +4,12 @@
     {
         public HttpClientAdapter()
         {
-            
+
         }
 
         public HttpClientAdapter(HttpMessageHandler handler) : base(handler)
         {
-            
+
         }
     }
 }

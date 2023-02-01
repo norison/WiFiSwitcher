@@ -34,36 +34,52 @@ public class Worker : BackgroundService
         {
             _logger.LogInformation("Operation started");
 
-            try
-            {
-                var ipAddress = _networkInterfaceService.GetIpAddress();
-
-                _logger.LogInformation("Resolved IP address: {address}", ipAddress);
-
-                using var httpClient = _httpClientFactory.Create(ipAddress);
-
-                var response = await httpClient.GetAsync(_connectionSettings.TargetAddress, stoppingToken);
-
-                _logger.LogInformation("Operation status code: {statusCode}", response.StatusCode);
-
-                if (response.IsSuccessStatusCode)
-                {
-                    await _networkInterfaceService.DisableWiFiAdapter();
-                }
-                else
-                {
-                    await _networkInterfaceService.EnableWiFiAdapter();
-                }
-            }
-            catch (Exception exception)
-            {
-                _logger.LogError(exception.Message);
-                await _networkInterfaceService.DisableWiFiAdapter();
-            }
+            await ExecuteOperationAsync(stoppingToken);
 
             _logger.LogInformation("Operation ended");
 
             await Task.Delay(_timerSettings.Delay, stoppingToken);
         }
+    }
+
+    private async Task ExecuteOperationAsync(CancellationToken stoppingToken)
+    {
+        try
+        {
+            var response = await SendRequestAsync(stoppingToken);
+
+            if (response.IsSuccessStatusCode)
+            {
+                await _networkInterfaceService.DisableWiFiAdapter();
+            }
+            else
+            {
+                await _networkInterfaceService.EnableWiFiAdapter();
+            }
+        }
+        catch (TaskCanceledException)
+        {
+            throw;
+        }
+        catch (Exception exception)
+        {
+            _logger.LogError(exception.Message);
+            await _networkInterfaceService.DisableWiFiAdapter();
+        }
+    }
+
+    private async Task<HttpResponseMessage> SendRequestAsync(CancellationToken stoppingToken)
+    {
+        var ipAddress = _networkInterfaceService.GetIpAddress();
+
+        _logger.LogInformation("Resolved IP address: {address}", ipAddress);
+
+        using var httpClient = _httpClientFactory.Create(ipAddress);
+
+        var response = await httpClient.GetAsync(_connectionSettings.TargetAddress, stoppingToken);
+
+        _logger.LogInformation("Operation status code: {statusCode}", response.StatusCode);
+
+        return response;
     }
 }
