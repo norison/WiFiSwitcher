@@ -32,13 +32,21 @@ public class Worker : BackgroundService
     {
         while (!stoppingToken.IsCancellationRequested)
         {
-            _logger.LogInformation("Operation started");
+            try
+            {
+                _logger.LogInformation("Operation started");
 
-            await ExecuteOperationAsync(stoppingToken);
+                await ExecuteOperationAsync(stoppingToken);
 
-            _logger.LogInformation("Operation ended");
+                _logger.LogInformation("Operation ended");
 
-            await Task.Delay(_timerSettings.Delay, stoppingToken);
+                await Task.Delay(_timerSettings.Delay, stoppingToken);
+            }
+            catch (TaskCanceledException)
+            {
+                _logger.LogInformation("Stopping the service");
+                break;
+            }
         }
     }
 
